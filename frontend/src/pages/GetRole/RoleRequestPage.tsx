@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { motion, AnimatePresence } from "framer-motion";
 
-import starAnimation from "../../../public/star-sing.json";
+import starSingUrl from "@/public/star-sing.json";
 import type { RootState } from "@/store";
 import { requestRole } from "@/api/requests/requestRole";
 import { auth } from "@/firebase";
@@ -156,7 +156,7 @@ export const RoleRequestPage = () => {
           <Player
             autoplay
             loop
-            src={starAnimation}
+            src={starSingUrl}
             style={{
               width: "240px",
               height: "240px",
@@ -226,7 +226,6 @@ export const RoleRequestPage = () => {
                 </Button>
               </motion.div>
             ) : (
-              /* ФОРМА ЗАЯВКИ */
               <motion.div
                 key="form"
                 initial={{ opacity: 0 }}

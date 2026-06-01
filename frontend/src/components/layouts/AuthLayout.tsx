@@ -7,7 +7,7 @@ import { ThemeToggle } from "../ThemeToggle";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 
 import { BrandingPanel } from "../ui/BrandingPanel";
-import starAnimation from "../../../public/star-hello.json";
+import starHelloUrl from "@/public/star-hello.json";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -22,7 +22,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
         <Player
           autoplay
           loop
-          src={starAnimation}
+          src={starHelloUrl}
           style={{
             width: "240px",
             height: "240px",

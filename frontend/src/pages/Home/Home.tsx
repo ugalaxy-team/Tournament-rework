@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Hero } from "../../components/Hero";
 import { TournamentSlider } from "./components/TournamentSlider";
+import starHelloUrl from "@/public/star-hello.json";
 
 const NotoEmoji = ({ code }: { code: string }) => (
   <img
@@ -85,7 +86,7 @@ export const Home = () => {
         ]}
         mascot={{
           circularText: t("hero.mascot.circular"),
-          lottieSrc: "/star-hello.json",
+          lottieSrc: starHelloUrl,
           buttonText: t("hero.mascot.button"),
           buttonLink: "/tournaments",
         }}
