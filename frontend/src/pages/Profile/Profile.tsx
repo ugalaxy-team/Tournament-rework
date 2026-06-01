@@ -188,6 +188,7 @@ const ContactChip: FC<ContactChipProps> = ({
   colorClass = "bg-bg-body border-border text-text-main",
 }) => {
   const { t } = useTranslation("profile");
+  const displayValue = value && value.trim() ? value : t("not_specified", "not specified");
 
   return (
     <div
@@ -197,7 +198,7 @@ const ContactChip: FC<ContactChipProps> = ({
       )}
     >
       <span className="opacity-60">{label}:</span>
-      <span>{value ?? t("missing")}</span>
+      <span>{displayValue}</span>
     </div>
   );
 };
