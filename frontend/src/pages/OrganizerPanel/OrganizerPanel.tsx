@@ -16,6 +16,7 @@ import { CreateTournamentModal } from "./CreateTournamentModal";
 import { auth } from "@/firebase";
 import { Hero } from "@/components/Hero";
 import { Stars } from "@/components/Stars";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import {
   TournamentsTab,
   TasksTab,
@@ -39,6 +40,10 @@ const OrganizerPanel = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isGenerateJuryConfirmOpen, setIsGenerateJuryConfirmOpen] = useState(false);
+  const [deleteTournamentId, setDeleteTournamentId] = useState<number | null>(null);
+  const [generateJuryTaskId, setGenerateJuryTaskId] = useState<number | null>(null);
 
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -168,7 +173,10 @@ const OrganizerPanel = () => {
                     setStatusFilter={setStatusFilter}
                     onInfo={(t) => { setSelectedTournament(t); setIsInfoModalOpen(true); }}
                     onEdit={(t) => { setSelectedTournament(t); setIsEditModalOpen(true); }}
-                    onDelete={(id) => confirm("Видалити?") && deleteMutation.mutateAsync(id)}
+                    onDelete={(id) => {
+                      setDeleteTournamentId(id);
+                      setIsDeleteConfirmOpen(true);
+                    }}
                     onCreateClick={() => setIsCreateModalOpen(true)}
                   />
                 )}
@@ -187,13 +195,8 @@ const OrganizerPanel = () => {
                     onDeleteTaskClick={(id) => selectedTournament && deleteTaskMutation.mutateAsync({ tournamentId: selectedTournament.id, taskId: id, user: auth.currentUser })}
                     onGenerateAssignmentsClick={async (taskId) => {
                       if (!selectedTournament || !auth.currentUser) return;
-                      if (!confirm("Згенерувати розподіл журі для цього завдання?")) return;
-                      try {
-                        await generateJuryAssignments(selectedTournament.id, taskId, auth.currentUser);
-                        alert("Розподіл журі згенеровано");
-                      } catch {
-                        alert("Не вдалося згенерувати розподіл");
-                      }
+                      setGenerateJuryTaskId(taskId);
+                      setIsGenerateJuryConfirmOpen(true);
                     }}
                     onSwitchTab={() => setActiveTab("tournaments")}
                   />
@@ -215,6 +218,48 @@ const OrganizerPanel = () => {
       <EditTournamentModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} tournament={selectedTournament} onSave={async (id, data) => updateMutation.mutateAsync({ id, data })} />
       <CreateTournamentModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onCreate={async (data) => createMutation.mutateAsync(data)} />
       <TournamentInfoModal isOpen={isInfoModalOpen} tournament={selectedTournament} onClose={() => setIsInfoModalOpen(false)} />
+
+      <ConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => {
+          setIsDeleteConfirmOpen(false);
+          setDeleteTournamentId(null);
+        }}
+        onConfirm={() => {
+          if (deleteTournamentId) {
+            deleteMutation.mutateAsync(deleteTournamentId);
+          }
+          setIsDeleteConfirmOpen(false);
+          setDeleteTournamentId(null);
+        }}
+        title="Видалити турнір"
+        description="Ви впевнені, що хочете видалити цей турнір? Цю дію не можна буде скасувати."
+        confirmText="Видалити"
+        isLoading={deleteMutation.isPending}
+      />
+
+      <ConfirmationModal
+        isOpen={isGenerateJuryConfirmOpen}
+        onClose={() => {
+          setIsGenerateJuryConfirmOpen(false);
+          setGenerateJuryTaskId(null);
+        }}
+        onConfirm={async () => {
+          if (!selectedTournament || !auth.currentUser || !generateJuryTaskId) return;
+          try {
+            await generateJuryAssignments(selectedTournament.id, generateJuryTaskId, auth.currentUser);
+            alert("Розподіл журі згенеровано");
+          } catch {
+            alert("Не вдалося згенерувати розподіл");
+          }
+          setIsGenerateJuryConfirmOpen(false);
+          setGenerateJuryTaskId(null);
+        }}
+        title="Генерація розподілу журі"
+        description="Ви впевнені, що хочете згенерувати розподіл журі для цього завдання?"
+        confirmText="Згенерувати"
+        confirmButtonColor="bg-blue-500 hover:bg-blue-600"
+      />
     </div>
   );
 };

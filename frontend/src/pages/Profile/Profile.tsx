@@ -9,6 +9,7 @@ import { deleteUser } from "@/api/requests";
 import { setUser } from "@/slices/user";
 import { EditProfileModal } from "./EditProfileModal";
 import { Button } from "@/components/ui/Button";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { cn } from "@/utils/cn";
 
 interface UserRole {
@@ -45,6 +46,7 @@ const Profile: FC = () => {
   const { t } = useTranslation("profile");
   const user = useSelector((s: RootState) => s.user.user as UserData | null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState<boolean>(false);
 
   const deleteUserMutation = useMutation({
     mutationKey: ["delete user"],
@@ -79,7 +81,7 @@ const Profile: FC = () => {
   const userTournaments =
     user.created_tournaments && user.created_tournaments.length > 0
       ? user.created_tournaments.map(
-          (t) => t.title || t.name || t("tournament_unnamed"),
+          (tournament) => tournament.title || tournament.name || "Без назви",
         )
       : [t("no_tournaments")];
 
@@ -129,9 +131,7 @@ const Profile: FC = () => {
                 size="md"
                 isLoading={deleteUserMutation.isPending}
                 className="border-red-500/30 text-red-500 hover:border-red-500 hover:text-red-600 hover:shadow-red-500/15"
-                onClick={() => {
-                  if (confirm(t("confirm_delete"))) deleteUserMutation.mutate();
-                }}
+                onClick={() => setIsDeleteConfirmOpen(true)}
               >
                 {t("delete_account")}
               </Button>
@@ -177,6 +177,19 @@ const Profile: FC = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         currentUser={user}
+      />
+
+      <ConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          deleteUserMutation.mutate();
+          setIsDeleteConfirmOpen(false);
+        }}
+        title={t("delete_account")}
+        description={t("confirm_delete")}
+        confirmText={t("delete_account")}
+        isLoading={deleteUserMutation.isPending}
       />
     </div>
   );

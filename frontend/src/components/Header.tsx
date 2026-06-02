@@ -59,7 +59,7 @@ export const Header = () => {
           Star for Life
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-10 relative">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-8 relative ml-8">
           {NAV_ITEMS.map(({ path, key }) => (
             <NavLink
               key={path}

@@ -115,5 +115,12 @@
     "jury_count": "Experts assigned: {{count}}",
     "saving": "Saving…",
     "save": "Save changes"
+  },
+  "confirmationModal": {
+    "title": "Confirmation",
+    "description": "Are you sure you want to perform this action?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "closeAria": "Close"
   }
 }
